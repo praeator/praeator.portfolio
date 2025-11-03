@@ -34,7 +34,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 const sections = document.querySelectorAll('section[id]');
 
 function highlightNavigation() {
-    const scrollY = window.pageYOffset;
+    const scrollY = window.scrollY;
 
     sections.forEach(section => {
         const sectionHeight = section.offsetHeight;
@@ -221,15 +221,6 @@ function createScrollTopButton() {
     });
 
     document.body.appendChild(scrollBtn);
-
-    // Show/hide button on scroll
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            scrollBtn.style.display = 'flex';
-        } else {
-            scrollBtn.style.display = 'none';
-        }
-    });
 }
 
 // Initialize scroll to top button
@@ -243,11 +234,29 @@ if (footerYear) {
 }
 
 // Add parallax effect to hero section (optional)
+let lastScrollTime = 0;
+const scrollThrottle = 16; // ~60fps
+
 window.addEventListener('scroll', () => {
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        const scrolled = window.pageYOffset;
-        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    const now = Date.now();
+    if (now - lastScrollTime >= scrollThrottle) {
+        lastScrollTime = now;
+        
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const scrolled = window.scrollY;
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
+        
+        // Show/hide scroll to top button
+        const scrollBtn = document.querySelector('.scroll-top-btn');
+        if (scrollBtn) {
+            if (window.scrollY > 300) {
+                scrollBtn.style.display = 'flex';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        }
     }
 });
 
